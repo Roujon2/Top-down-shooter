@@ -1,0 +1,173 @@
+[gd_scene load_steps=16 format=2]
+
+[ext_resource path="res://scripts/Player.cs" type="Script" id=1]
+[ext_resource path="res://assets/Spritesheet/Monke_player.png" type="Texture" id=2]
+[ext_resource path="res://scenes/Stats.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scripts/StateManager.cs" type="Script" id=4]
+[ext_resource path="res://scripts/IdleState.cs" type="Script" id=5]
+[ext_resource path="res://scripts/WalkState.cs" type="Script" id=6]
+[ext_resource path="res://scripts/ChargeState.cs" type="Script" id=7]
+[ext_resource path="res://scripts/HitState.cs" type="Script" id=8]
+[ext_resource path="res://assets/Spritesheet/RedCircle.png" type="Texture" id=9]
+
+[sub_resource type="Animation" id=4]
+resource_name = "Charge"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 8 ]
+}
+
+[sub_resource type="Animation" id=6]
+resource_name = "Hit"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 9 ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "Idle"
+length = 2.5
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4, 0.8, 1.2, 1.6, 2 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 3, 4, 5 ]
+}
+
+[sub_resource type="Animation" id=5]
+resource_name = "Walk"
+length = 1.2
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4, 0.6, 0.8, 1 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 3, 4, 5 ]
+}
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 13.0096
+
+[sub_resource type="CircleShape2D" id=8]
+
+[node name="Player" type="KinematicBody2D" groups=["player"]]
+position = Vector2( 201, 72 )
+scale = Vector2( 2, 2 )
+collision_mask = 12
+script = ExtResource( 1 )
+speed = 500
+
+[node name="VisualNode" type="Node2D" parent="."]
+
+[node name="Sprite" type="Sprite" parent="VisualNode"]
+texture = ExtResource( 2 )
+offset = Vector2( 8, 0 )
+hframes = 8
+vframes = 2
+frame = 8
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="VisualNode"]
+anims/Charge = SubResource( 4 )
+anims/Hit = SubResource( 6 )
+anims/Idle = SubResource( 3 )
+anims/Walk = SubResource( 5 )
+
+[node name="ChargingBar" type="ProgressBar" parent="VisualNode"]
+anchor_right = 1.0
+margin_left = -10.0
+margin_top = 18.0
+margin_right = 10.0
+margin_bottom = 23.0
+grow_horizontal = 0
+input_pass_on_modal_close_click = false
+max_value = 0.4
+percent_visible = false
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+position = Vector2( 0, 1 )
+shape = SubResource( 1 )
+
+[node name="ShootCooldown" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
+[node name="HitCooldown" type="Timer" parent="."]
+wait_time = 2.3
+one_shot = true
+
+[node name="Stats" parent="." instance=ExtResource( 3 )]
+health = 1
+speed = 300
+
+[node name="StateManager" type="Node2D" parent="."]
+script = ExtResource( 4 )
+
+[node name="Idle" type="Node2D" parent="StateManager"]
+script = ExtResource( 5 )
+
+[node name="Walk" type="Node2D" parent="StateManager"]
+script = ExtResource( 6 )
+
+[node name="Charge" type="Node2D" parent="StateManager"]
+script = ExtResource( 7 )
+
+[node name="ChargeTimer" type="Timer" parent="StateManager/Charge"]
+wait_time = 0.7
+one_shot = true
+
+[node name="Hit" type="Node2D" parent="StateManager"]
+script = ExtResource( 8 )
+
+[node name="HitTimer" type="Timer" parent="StateManager/Hit"]
+wait_time = 0.1
+one_shot = true
+
+[node name="MeleeHitArea" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 14
+
+[node name="HitCollisionShape" type="CollisionShape2D" parent="MeleeHitArea"]
+position = Vector2( 0, 1 )
+shape = SubResource( 8 )
+disabled = true
+
+[node name="HitSize" type="Sprite" parent="MeleeHitArea/HitCollisionShape"]
+modulate = Color( 1, 1, 1, 0.588235 )
+position = Vector2( 0, -0.0499992 )
+scale = Vector2( 0.077539, 0.077539 )
+texture = ExtResource( 9 )
+
+[connection signal="timeout" from="HitCooldown" to="." method="_on_HitCooldown_timeout"]
+[connection signal="timeout" from="StateManager/Hit/HitTimer" to="StateManager/Hit" method="_on_HitTimer_timeout"]
+[connection signal="body_entered" from="MeleeHitArea" to="StateManager/Hit" method="_on_MeleeHitArea_body_entered"]

@@ -1,0 +1,27 @@
+[gd_scene format=2]
+
+[node name="Camera2D" type="Camera2D"]
+current = true
+zoom = Vector2( 1.6, 1.6 )
+limit_left = 0
+limit_top = -65
+limit_right = 3840
+limit_bottom = 1980
+editor_draw_limits = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Wave" type="TextEdit" parent="CanvasLayer"]
+margin_right = 80.0
+margin_bottom = 24.0
+text = "Wave = 0"
+readonly = true
+wrap_enabled = true
+
+[node name="EnemiesKilled" type="TextEdit" parent="CanvasLayer"]
+margin_top = 24.0
+margin_right = 152.0
+margin_bottom = 64.0
+text = "Enemies Killed = 0
+"
+readonly = true
