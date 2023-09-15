@@ -1,5 +1,4 @@
-# Monkey vs. Cyborgs
-## Top Down Shooter
+# Top Down Shooter
 Functional infinite top down shooter developed with C# in the Godot engine.
 
 Assets created using Aseprite.
